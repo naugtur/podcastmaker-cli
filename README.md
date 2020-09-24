@@ -4,7 +4,7 @@ a pile of bash tricks for unattended audio editing
 ## tools
 
 ```
-sudo apt-get install normalize-audio sox
+sudo apt-get install normalize-audio sox libsox-fmt-mp3 mp3val mp3blaster
 ```
 
 
@@ -45,7 +45,10 @@ source: https://dissectionbydavid.wordpress.com/2010/10/01/using-sox-via-php-to-
 
 #### noise gate
 
+- slight noise gate
 compand .1,.2 -inf,-50.1,-inf,-50,-50 0 -90 .1
+- strong noise gate
+compand .2,.2 -inf,-30.1,-inf,-30,-30 0 -90
 
 #### noise reduction
 
@@ -109,6 +112,13 @@ sox --norm=-3 input.wav outoput.wav
 
 
 ### building audio from multiple files, mixing
+
+#### Crossfade intro
+
+```
+sox --combine concatenate intro.wav all.mp3 result.mp3 splice -q 16,3
+# 16 is the length of intro, 3 is the length of overlap
+```
 
 splice for joining parts of the recording or cuts
 trim
