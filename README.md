@@ -7,6 +7,11 @@ a pile of bash tricks for unattended audio editing
 sudo apt-get install normalize-audio sox libsox-fmt-mp3 mp3val mp3blaster
 ```
 
+## podcast maker example code
+
+```
+./podcastplease.sh chunk*.wav
+```
 
 ## research
 
@@ -39,6 +44,10 @@ source: http://www.ericphelps.com/batch/samples/MP3_Recode.txt
 podcast:
 compand 0.3,1 6:-70,-60,-20 -5 -90
 source: https://dissectionbydavid.wordpress.com/2010/10/01/using-sox-via-php-to-cleanup-podcasts/
+
+much stronger compression:
+compand 0.3,1 6:-70,-60,-20 -5 -90 0.2 \
+source: https://askubuntu.com/questions/90568/apply-compressor-effect-to-new-podcasts-automatically
 ```
 
 ### noise 

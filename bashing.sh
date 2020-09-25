@@ -1,18 +1,19 @@
 ## the file with experiments
 
-filelist=`ls test*.mp3`;
+filelist=`ls ZOO*`;
 
-## pipeline1
+# echo pipeline1
 
-# sox --norm=-3 $filelist out1.mp3 \
+# sox --norm=-3 $filelist out1.wav \
 #   highpass 100 \
 #   bass 1 \
 #   compand 0.05,0.2 6:-54,-90,-36,-36,-24,-24,0,-12 0 -90 0.1 \
 #   contrast 0 \
 #   earwax
 
-## pipeline2
-sox --norm=-3 $filelist out1.mp3 \
+
+echo pipeline2
+sox --norm=-3 $filelist out2.wav \
   loudness \
   compand .1,.2 -inf,-50.1,-inf,-50,-50 0 -90 .1 \
   bass 1 \
@@ -20,8 +21,14 @@ sox --norm=-3 $filelist out1.mp3 \
   contrast 0 \
   earwax
 
-mp3val out1.mp3 -f -nb
+echo pipeline3
+sox --norm=-3 $filelist out3.wav \
+  loudness -20\
+  compand 0.3,1 6:-70,-60,-20 -5 -90 0.2 \
+  bass 1 \
+  contrast 0 \
+  earwax
 
-sox --norm=-3 --combine concatenate intro.wav out1.mp3 full.mp3 splice -q 16,3
-mp3val full.mp3 -f -nb
+# sox --norm=-3 --combine concatenate intro.wav out1.mp3 full.mp3 splice -q 16,3
+# mp3val full.mp3 -f -nb
 
