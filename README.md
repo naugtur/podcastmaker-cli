@@ -13,7 +13,26 @@ sudo apt-get install normalize-audio sox libsox-fmt-mp3 mp3val mp3blaster
 ./podcastplease.sh chunk*.wav
 ```
 
+## input format 
+input for the earwax filter needs to be in stereo 44100hz
+can remove earwax or convert the inputs
+```
+ffmpeg -i a.m4a -ac 2 -ar 44100 b.mp3
+```
 ## research
+
+### remove loud clicks before normalization
+- use limitergain
+- don't kow how it works yet
+
+vol gain [type [limitergain]]
+
+Seems to work:
+```
+sox testfiles/test.mp3 b.wav vol 1.5 amplitude 0.3
+```
+though docs say limitergain should be 0.05 but this limits the peaks much better somehow.
+But it's not working for all waveforms. Gotta look for a different limiter implementation. `compand` was mentioned as limiter too. 
 
 ### compression
 ```
@@ -79,6 +98,50 @@ compand .2,.2 -inf,-30.1,-inf,-30,-30 0 -90
               On most systems, the two stages - profiling and reduction - can be combined using a pipe, e.g.
                  sox noisy.wav -n trim 0 1 noiseprof | play noisy.wav noisered
 
+```
+# This script shows using several
+# effects in combination to normalise and trim voice recordings that                                                                   
+# may have been recorded using different microphones, with differing                                                                   
+# background noise etc.                                                                                                                   
+
+SOX=/usr/bin/sox
+
+if [ $# -lt 2 ]; then
+  echo "Usage: $0 infile outfile"
+  exit 1
+fi
+
+$SOX "/tmp/tmp_audio_leveled.wav" -n trim 0 0.5  noiseprof newprofile
+$SOX "/tmp/tmp_audio_leveled.wav" $2 noisered newprofile
+
+$SOX "$1" "/tmp/tmp_audio_leveled.wav" \
+    remix - \
+    highpass 100 \
+    norm \
+    compand 0.05,0.2 6:-54,-90,-36,-36,-24,-24,0,-12 0 -90 0.1 \
+    vad -T 0.6 -p 0.2 -t 5 \
+    fade 0.1 \
+    reverse \
+    vad -T 0.6 -p 0.2 -t 5 \
+    fade 0.1 \
+    reverse \
+    norm -0.5 `  
+
+```
+https://superuser.com/questions/588793/need-to-clean-up-audio-noise-using-sox
+
+
+##### ffmpeg
+
+https://superuser.com/questions/733061/reduce-background-noise-and-optimize-the-speech-from-an-audio-clip-using-ffmpeg
+
+FFmpeg now has 3 native filters to deal with noise background:
+
+    afftdn: Denoises audio samples with FFT
+    anlmdn: Reduces broadband noise in audio samples using a Non-Local Means algorithm
+    arnndn: Reduces noise from speech using Recurrent Neural Networks. Examples for model files to load can be found here.
+
+Also, since some time, one can use ladspa (look for noise-supressor) and/or lv2 (look for speech denoiser) filters with FFmpeg.
 
 ### normalization
 
